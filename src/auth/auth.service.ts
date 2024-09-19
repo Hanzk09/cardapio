@@ -2,13 +2,13 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { UserPayloadLogin } from './entity/user-payload-login';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginPayload } from './entity/login-payload';
 import { User } from 'src/user/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +37,7 @@ export class AuthService {
 
   async validateUser(payload: UserPayloadLogin): Promise<User> {
     const user = await this.userService.findByEmail(payload.email);
-    if (user && user.password == payload.password) {
+    if (user && (await bcrypt.compare(payload.password, user.password))) {
       return user;
     }
     return null;

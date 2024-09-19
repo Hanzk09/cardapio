@@ -3,11 +3,13 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { PrismaService } from 'src/prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -25,6 +27,11 @@ export class UserService {
         throw new BadRequestException('Usuário já cadastrado!');
       }
 
+      createUserDto.password = await bcrypt.hash(
+        createUserDto.password,
+        +process.env.SALTROUNDS,
+      );
+
       var newUser = await this.prismaService.user.create({
         select: {
           id: true,
@@ -40,6 +47,7 @@ export class UserService {
 
       return newUser;
     } catch (error) {
+      Logger.error(error);
       if (error instanceof HttpException) {
         throw error;
       }
@@ -62,6 +70,7 @@ export class UserService {
       });
       return users;
     } catch (error) {
+      Logger.error(error);
       if (error instanceof HttpException) {
         throw error;
       }
@@ -87,6 +96,7 @@ export class UserService {
       });
       return users;
     } catch (error) {
+      Logger.error(error);
       if (error instanceof HttpException) {
         throw error;
       }
@@ -104,6 +114,19 @@ export class UserService {
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     try {
+      var userExists = await this.prismaService.user.findUnique({
+        where: { id: id },
+      });
+
+      if (!userExists) {
+        throw new BadRequestException('Usuário não encontrado!');
+      }
+
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        +process.env.SALTROUNDS,
+      );
+
       var users: User = await this.prismaService.user.update({
         select: {
           id: true,
@@ -121,6 +144,7 @@ export class UserService {
       });
       return users;
     } catch (error) {
+      Logger.error(error);
       if (error instanceof HttpException) {
         throw error;
       }
@@ -137,6 +161,7 @@ export class UserService {
       });
       return users;
     } catch (error) {
+      Logger.error(error);
       if (error instanceof HttpException) {
         throw error;
       }
