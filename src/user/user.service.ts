@@ -26,6 +26,15 @@ export class UserService {
       }
 
       var newUser = await this.prismaService.user.create({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          birthdate: true,
+          createdAt: true,
+          updatedAt: true,
+        },
         data: createUserDto,
       });
 
@@ -40,7 +49,17 @@ export class UserService {
 
   async findAll(): Promise<User[]> {
     try {
-      var users: User[] = await this.prismaService.user.findMany();
+      var users: User[] = await this.prismaService.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          birthdate: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
       return users;
     } catch (error) {
       if (error instanceof HttpException) {
@@ -50,9 +69,18 @@ export class UserService {
     }
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(id: number): Promise<User | null> {
     try {
       var users: User = await this.prismaService.user.findUnique({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          birthdate: true,
+          createdAt: true,
+          updatedAt: true,
+        },
         where: {
           id: id,
         },
@@ -66,9 +94,26 @@ export class UserService {
     }
   }
 
+  async findByEmail(email: string): Promise<User> {
+    return await this.prismaService.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       var users: User = await this.prismaService.user.update({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          birthdate: true,
+          createdAt: true,
+          updatedAt: true,
+        },
         where: {
           id: id,
         },
