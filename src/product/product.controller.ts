@@ -17,11 +17,11 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FilterProducts } from './entities/filter-products.entity';
 
-@UseGuards(JwtAuthGuard)
 @Controller('product')
 export class ProductController {
   constructor(private readonly productsService: ProductService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createProductDto: CreateProductDto, @Req() req) {
     return this.productsService.create(createProductDto, req.user.id);
@@ -36,7 +36,7 @@ export class ProductController {
   findOne(@Param('id', ParseIntPipe) id: string) {
     return this.productsService.findOne(+id);
   }
-
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: string,
@@ -45,7 +45,7 @@ export class ProductController {
   ) {
     return this.productsService.update(+id, updateProductDto, req.user.id);
   }
-
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: string) {
     return this.productsService.remove(+id);
