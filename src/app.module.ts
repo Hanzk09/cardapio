@@ -7,9 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './filters/Http-Exception.filter';
+import { ProductModule } from './product/product.module';
 
 @Module({
-  imports: [UserModule, AuthModule],
+  imports: [UserModule, AuthModule, ProductModule],
   controllers: [AppController],
   providers: [
     AppService,
