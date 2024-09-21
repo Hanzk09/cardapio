@@ -19,12 +19,14 @@ export class AuthService {
 
   async login(user: User): Promise<LoginPayload> {
     try {
-      const { id, name, email } = user;
+      const { id, name, email, phone, birthdate } = user;
 
       return {
         id,
         name,
         email,
+        phone,
+        birthdate,
         token: await this.jwtService.signAsync({ id, name, email }),
       };
     } catch (error) {
